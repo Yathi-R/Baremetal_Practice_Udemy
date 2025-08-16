@@ -1,0 +1,60 @@
+Step1: Identify the GPIO port of LED
+PA5 LD2 (Green)
+
+Step2: Identify the PORT Memory Map and register boundary addresses
+0x40020000 - 0x400203FF GPIOA
+
+step3: Activate/Enable the clk for GPIOA Peripheral
+0x40023800 - 0x4002 3BFF RCC (Reset and clock control)
+AHB1 bus 180Mhz
+
+RCC AHB1 peripheral clock enable register (RCC_AHB1ENR)
+Address offset: 0x30
+Reset value: 0x0000 0000
+
+ Bit 0 GPIOAEN: IO port A clock enable
+ This bit is set and cleared by software.
+ 0: IO port A clock disabled
+ 1: IO port A clock enabled
+
+
+
+step4: Configure the gpio pin mode as output
+
+GPIO port mode register (GPIOx_MODER) (x = A..H)
+ Address offset: 0x00
+ Reset values:
+ • 0xA8000000 for port A
+ • 0x00000280 for port B
+ • 0x0000 0000 for other ports
+
+ MODER5[1:0] 11 10 pins 
+maskvalue 0xFFFFF3FF for clearing 10&11 bits
+maskvalue to set 10th bit 0x400
+
+ Bits 2y:2y+1MODERy[1:0]: Port x configuration bits (y = 0..15)
+ These bits are written by software to configure the I/O direction mode.
+ 00: Input (reset state)
+ 01: General purpose output mode
+ 10: Alternate function mode
+ 11: Analog mode
+
+
+GPIO port output data register (GPIOx_ODR) (x = A..H)
+ Address offset: 0x14
+ Reset value: 0x0000 0000
+
+ODR5
+maskvalue 0x0020;
+
+step5: Write 1/0 to HIGH/LOW the GPIO pin
+
+
+Address of clock control register (AHB1ENR)
+0x40023800+0x30 = 0x40023830
+
+Address of GPIOA mode register
+0x40020000+0x00 = 0x40020000
+
+Address of GPIOA output data register
+0x40020000+0x14 = 0x40020014
